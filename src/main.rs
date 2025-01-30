@@ -2,12 +2,23 @@ use clap::Parser;
 use unicode_width::UnicodeWidthStr;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+const GIT_HASH: &str = env!("GIT_HASH");
+
+const APP_VERSION: &str = concat!(
+    env!("CARGO_PKG_NAME"),
+    " version ",
+    env!("CARGO_PKG_VERSION"),
+    " (rev:",
+    env!("GIT_HASH"),
+    ")"
+);
 
 #[derive(Debug, Parser)]
 #[command(
     name = "no-fri-push",
     version = VERSION,
-    about = "Don't Push to Production on Friday!"
+    about = "Don't Push to Production on Friday!",
+    disable_version_flag = true
 )]
 struct Cli {
     #[arg(
@@ -16,28 +27,35 @@ struct Cli {
         help = "Specify message"
     )]
     message: String,
+    #[arg(long, short = 'V', help = "Print version")]
+    pub version: bool,
 }
 
 fn main() {
     let cli = Cli::parse();
-    let msg_width = UnicodeWidthStr::width(cli.message.as_str());
-    let dash_line = "-".repeat(msg_width + 2);
 
-    println!("|{}|", dash_line);
-    println!("| {} |", cli.message);
-    println!("|{}|", dash_line);
+    if cli.version {
+        print!("{}", APP_VERSION);
+    } else {
+        let msg_width = UnicodeWidthStr::width(cli.message.as_str());
+        let dash_line = "-".repeat(msg_width + 2);
 
-    let ascii_art_lines = [r"\ (•◡•) /", r" \     /", r"  --", r"  |  |", r"   |_ |_"];
+        println!("|{}|", dash_line);
+        println!("| {} |", cli.message);
+        println!("|{}|", dash_line);
 
-    let total_width = msg_width + 4;
+        let ascii_art_lines = [r"\ (•◡•) /", r" \     /", r"  --", r"  |  |", r"   |_ |_"];
 
-    for &line in &ascii_art_lines {
-        let line_width = UnicodeWidthStr::width(line);
-        if line_width < total_width {
-            let left_spaces = (total_width - line_width) / 2;
-            print!("{}", " ".repeat(left_spaces));
+        let total_width = msg_width + 4;
+
+        for &line in &ascii_art_lines {
+            let line_width = UnicodeWidthStr::width(line);
+            if line_width < total_width {
+                let left_spaces = (total_width - line_width) / 2;
+                print!("{}", " ".repeat(left_spaces));
+            }
+            println!("{}", line);
         }
-        println!("{}", line);
     }
 }
 
