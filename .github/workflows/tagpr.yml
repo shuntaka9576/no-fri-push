@@ -21,7 +21,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: ./.github/actions/release
-      with:
-        tag: ${{ steps.tagpr.outputs.tag }}
-        goreleaser_token: ${{ secrets.GORELEASER_TOKEN }}
       if: "steps.tagpr.outputs.tag != ''"
+      with:
+        goreleaser_token: ${{ secrets.GORELEASER_TOKEN }}
+        goreleaser_args: "release --clean"
