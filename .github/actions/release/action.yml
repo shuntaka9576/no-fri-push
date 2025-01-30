@@ -13,12 +13,6 @@ inputs:
     description: goreleaser token
     required: true
 
-permissions:
-  contents: write
-  packages: write
-  issues: write
-  id-token: write
-
 runs:
   using: composite
   steps:
