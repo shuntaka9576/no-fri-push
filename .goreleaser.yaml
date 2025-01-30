@@ -1,0 +1,55 @@
+version: 2
+
+before:
+  hooks:
+    - rustup default stable
+    - cargo install --locked cargo-zigbuild
+
+builds:
+  - id: "no-fri-push"
+    builder: rust
+    binary: no-fri-push
+    targets:
+      - x86_64-apple-darwin
+      - aarch64-apple-darwin
+      - x86_64-unknown-linux-gnu
+    tool: "cargo"
+    command: zigbuild
+    flags:
+      - --release
+    env:
+      - FOO=bar
+    skip: false
+
+archives:
+  - formats: ["tar.gz"]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+brews:
+  - repository:
+      owner: shuntaka9576
+      name: homebrew-tap
+      token: "{{ .Env.GITHUB_TOKEN }}"
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
+    directory: Formula
+    license: MIT
+    name: example-rust
+    url_template: "https://github.com/shuntaka9576/no-fri-push/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    homepage: "https://shuntaka.dev/"
+    description: "Don't Push to Production on Friday!"
+    test: |
+      system "#{bin}/no-fri-push --help"
+    install: |
+      bin.install "no-fri-push"
