@@ -12,7 +12,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 struct Cli {
     #[arg(
         long,
-        default_value = "Don't push on Friday!",
+        default_value = "Don't Push to Production on Friday!",
         help = "Specify message"
     )]
     message: String,
