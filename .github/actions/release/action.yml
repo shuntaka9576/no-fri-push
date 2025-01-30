@@ -1,0 +1,35 @@
+name: release
+
+on:
+  push:
+    tags:
+    - "v[0-9]+.[0-9]+.[0-9]+"
+
+inputs:
+  tag:
+    description: tag name to be released
+    default: ''
+  goreleaser_token:
+    description: goreleaser token
+    required: true
+
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  id-token: write
+
+jobs:
+  goreleaser:
+    using: composite
+    steps:
+      - uses: mlugg/setup-zig@v1
+      - uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          # args: release --snapshot --skip publish --clean
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ inputs.goreleaser_token }}
+
